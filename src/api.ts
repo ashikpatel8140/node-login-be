@@ -1,22 +1,11 @@
 import { Router } from "express";
-const router = Router();
 import authenticate from "./middleware/autheticate";
 import userRouter from "./modules/user";
 import todoRouter from "./modules/todo";
+import send from "./utils/responseMessage";
+const router = Router();
 
-interface RouteHandler {
-  user: {
-    // Define 'user' as a property with its own structure
-    path: Router;
-    IsPrivateModule?: boolean;
-  };
-  todo: {
-    path: Router;
-    IsPrivateModule?: boolean;
-  };
-}
-
-const handlers: RouteHandler = {
+const handlers:  Record<string, {path: Router, IsPrivateModule?: boolean}> = {
   user: {
     // Now assign an object with the required properties
     path: userRouter,
@@ -40,10 +29,7 @@ for (const [moduleName, handler] of Object.entries(handlers)) {
 
 // Add a catch-all handler for unmatched routes (optional)
 router.use("*", (req, res) => {
-  res.status(404).json({
-    code: 404,
-    message: "API not found",
-  });
+  return send(res, 404, "API Not Found")
 });
 
 export default router;
